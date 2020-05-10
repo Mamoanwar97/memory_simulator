@@ -4,32 +4,37 @@ import QtQuick.Controls 2.0
 
 Window {
     visible: true
-    width: 640
-    height: 480
+    width: 1280
+    height: 720
     title: qsTr("Hello World")
     id : windowRay2
 
-    Row{
+    Row {
         Rectangle {
             width: 400
             height: windowRay2.height
-            Memory{
+            Memory {
                 id:memory
             }
         }
 
         // just for testing
         Button {
-            id : btn
-            text: "Send"
+            text: "clear"
+            onClicked: memory.clear();
+        }
+        Button {
+            text: "Size-Type"
             onClicked: {
-//                console.log("before :",memory.segments);
-//                memory.clear();
-//                console.log("after :",memory.segments);
+                MemoryBackend.set_allocation_type("first");
+                MemoryBackend.set_size(1000);
+            }
+        }
 
-//                MemoryBackend.set_allocation_type("first");
-//                MemoryBackend.set_size(1000);
-
+        Button {
+            id : btn
+            text: "Process"
+            onClicked: {
                 var process = MemoryBackend.createProcess();
                 var segment = MemoryBackend.createSegment();
                 console.log(process,segment);
@@ -46,12 +51,12 @@ Window {
             }
         }
         Button {
-            text: "hole"
+            text: "Hole"
             onClicked: {
-                var myHole = MemoryBackend.createHole(100,200);
-                console.log("hole: ",myHole.hole_address);
-
+                var myHole = MemoryBackend.createHole();
                 myHole.hole_address = 70;
+                myHole.hole_size = 100;
+
                 MemoryBackend.add_hole(myHole)
             }
         }
@@ -73,8 +78,9 @@ Window {
         for (var i =0 ; i < processes.length; i ++)
         {
             console.log("######## Process",i);
-            for(var j =0 ; j < processes[i].segments.length; j++) {
-                console.log("seg",j,processes[i].segments[j].seg_size);
+            var segments = processes[i].getSegments();
+            for(var j =0 ; j < segments.length; j++) {
+                console.log("seg",j,segments[j].seg_size);
             }
             
         }

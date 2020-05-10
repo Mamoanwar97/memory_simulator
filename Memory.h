@@ -36,9 +36,8 @@ class process
     Q_GADGET
 public:
     vector<segment> segments;
-    Q_INVOKABLE vector<segment> getSegments() {
-        return this->segments;
-//        return QVariant::fromValue(this->segments);
+    Q_INVOKABLE QVariant getSegments() {
+        return QVariant::fromValue(this->segments);
     }
     Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
 };
@@ -54,17 +53,12 @@ public:
     Q_INVOKABLE QVariant createHole()
     {
         hole x ;
-        QVariant::fromValue(x);
+        return QVariant::fromValue(x);
     }
     Q_INVOKABLE QVariant createSegment()
     {
         segment x ;
         return QVariant::fromValue(x);
-
-        //x.name = name.toStdString();
-        //x.seg_size= size;
-        //x.seg_address = address;
-        // wrapping
     }
 
     Q_INVOKABLE QVariant createProcess()
@@ -210,7 +204,7 @@ public:
         cout << "setSize " << t_size << endl;
         memory_size = t_size;
     }
-    void allocate_dummies()
+    Q_INVOKABLE void allocate_dummies()
     {
         sort(holes.begin(),holes.end(), sortByFirst);
 
@@ -259,16 +253,17 @@ public:
 
     Q_INVOKABLE bool add_process(process p)
     {
-        cout << "process to be added "  << endl;
-        for(int i =0 ;  i < p.segments.size(); i++)
-            cout << p.segments[i].name <<" ";
-        cout << endl;
+//        cout << "process to be added "  << endl;
+//        for(int i =0 ;  i < p.segments.size(); i++)
+//            cout << p.segments[i].name <<" ";
+//        cout << endl;
 
         processes.push_back(p);
         bool x = allocate_process(processes.size()-1);
         if(!x)
         {
             processes.pop_back();
+            cout << "didn't allocate process" << endl;
             return false;
         }
 
