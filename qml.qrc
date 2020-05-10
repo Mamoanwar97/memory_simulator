@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Segment.qml</file>
+        <file>Memory.qml</file>
+        <file>Dummy.qml</file>
+    </qresource>
+</RCC>
