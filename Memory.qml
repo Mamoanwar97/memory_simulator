@@ -8,15 +8,16 @@ Rectangle {
 
     border.color: "red"
     border.width: 5
-    property int totalSize: 1
+    property double totalSize: 1
 
     // just to clear them next iteration
     property var segments: []
 
     function addSegment(segment)
     {
-        var address = (segment.seg_address / memory.totalSize) * memory.height;
-        console.log("y_address:",segment.seg_address ,memory.totalSize , memory.height);
+        var ratio = segment.seg_address / memory.totalSize;
+        var address = ratio * memory.height;
+        console.log("y_address:",segment.seg_address ,memory.totalSize , memory.height,"_____ ratio",ratio);
 
         var newSegment = Qt.createComponent("Segment.qml");
         var Segment    = newSegment.createObject(memory, {
@@ -45,10 +46,11 @@ Rectangle {
         for (var i =0 ; i < processes.length; i ++)
         {
             var segments = processes[i].getSegments();
-            for(var j =0 ; j < segments.length; j++) {
-                memory.addSegment(segments[i]);
-            }
+            console.log("segments____",segments);
 
+            for(var j =0 ; j < segments.length; j++) {
+                memory.addSegment(segments[j]);
+            }
         }
 
         for(var j =0 ; j <dummies.length; j++) {
