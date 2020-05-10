@@ -17,30 +17,50 @@ Window {
                 id:memory
             }
         }
+
+        // just for testing
         Button {
             id : btn
             text: "Send"
-            width: 300
-            height: 200
             onClicked: {
-                console.log("before :",memory.segments);
-                memory.clear();
-                console.log("after :",memory.segments);
+//                console.log("before :",memory.segments);
+//                memory.clear();
+//                console.log("after :",memory.segments);
 
-                MemoryBackend.set_allocation_type("first");
-                MemoryBackend.set_size(1000);
+//                MemoryBackend.set_allocation_type("first");
+//                MemoryBackend.set_size(1000);
+
+                var process = MemoryBackend.createProcess();
+                var segment = MemoryBackend.createSegment();
+                console.log(process,segment);
+                segment.seg_size = 100;
+                segment.seg_address = 17;
+                segment.name = "ray2";
+                process.addSegment(segment);
+                segment.name = "ray2222";
+                process.addSegment(segment);
+
+                MemoryBackend.add_process(process);
+
 
             }
         }
+        Button {
+            text: "hole"
+            onClicked: {
+                var myHole = MemoryBackend.createHole(100,200);
+                console.log("hole: ",myHole.hole_address);
+
+                myHole.hole_address = 70;
+                MemoryBackend.add_hole(myHole)
+            }
+        }
     }
+
     Component.onCompleted: {
         memory.addSegment(50);
         memory.addSegment(450);
         memory.addDummySegment(150);
-
-
-        MemoryBackend.set_allocation_type("first");
-        MemoryBackend.set_size(1000);
     }
 
     Connections {

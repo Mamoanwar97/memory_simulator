@@ -12,10 +12,21 @@ using namespace std;
 class segment
 {
     Q_GADGET
+    Q_PROPERTY(QString name READ getName WRITE setName)
+    Q_PROPERTY(int seg_size READ getSize WRITE setSize)
+    Q_PROPERTY(int seg_address READ getAddress WRITE setAddress)
 public:
+    segment() {this->name=""; this->seg_size=0; this->seg_address = 0;}
     string name;
     int seg_size;
     int seg_address = -1;
+
+    void setName(const QString& name) {this->name= name.toStdString();}
+    void setSize(const int& size) {this->seg_size = size;}
+    void setAddress(const int& add) {this->seg_address = add;}
+    int getSize() {return this->seg_size;}
+    int getAddress() {return this->seg_address;}
+    QString getName() {return QString::fromStdString(this->name);}
 };
 Q_DECLARE_METATYPE(segment);
 
@@ -24,8 +35,12 @@ class process
 {
     Q_GADGET
 public:
-
     vector<segment> segments;
+    Q_INVOKABLE vector<segment> getSegments() {
+        return this->segments;
+//        return QVariant::fromValue(this->segments);
+    }
+    Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
 };
 Q_DECLARE_METATYPE(process);
 
@@ -34,6 +49,31 @@ Q_DECLARE_METATYPE(process);
 class memory : public QObject
 {
     Q_OBJECT
+public:
+    // *********** DONT REMOVE ***************
+    Q_INVOKABLE QVariant createHole()
+    {
+        hole x ;
+        QVariant::fromValue(x);
+    }
+    Q_INVOKABLE QVariant createSegment()
+    {
+        segment x ;
+        return QVariant::fromValue(x);
+
+        //x.name = name.toStdString();
+        //x.seg_size= size;
+        //x.seg_address = address;
+        // wrapping
+    }
+
+    Q_INVOKABLE QVariant createProcess()
+    {
+        process x;
+        return QVariant::fromValue(x);
+    }
+
+
 private:
     int memory_size;
 
@@ -159,10 +199,10 @@ public:
     memory() : QObject() { cout << "Mss" << endl; }
 
     //Set first fit or best fit
-    Q_INVOKABLE void set_allocation_type(string type)
+    Q_INVOKABLE void set_allocation_type(QString type)
     {
-        cout << "setType " << type << endl;
-        allocation_type = type;
+        cout << "setType " << type.toStdString() << endl;
+        allocation_type = type.toStdString();
     }
     //set total size of the memory
     Q_INVOKABLE void set_size(int t_size)
@@ -210,7 +250,7 @@ public:
     }
     Q_INVOKABLE void add_hole(hole x)
     {
-        cout << "hole to be added " << x.hole_size << x.hole_address <<endl;
+        cout << "hole to be added " << x.hole_size << "," << x.hole_address <<endl;
         holes.push_back(x);
         combine_holes();
 
@@ -219,7 +259,11 @@ public:
 
     Q_INVOKABLE bool add_process(process p)
     {
-        cout << "process to be added " << endl;
+        cout << "process to be added "  << endl;
+        for(int i =0 ;  i < p.segments.size(); i++)
+            cout << p.segments[i].name <<" ";
+        cout << endl;
+
         processes.push_back(p);
         bool x = allocate_process(processes.size()-1);
         if(!x)

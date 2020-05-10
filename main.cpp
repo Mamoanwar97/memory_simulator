@@ -10,6 +10,9 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+//    qmlRegisterType<hole>("Hole",1,0,"Hole");
+
+
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -55,7 +55,7 @@ Rectangle {
         {
             memory.segments[i].destroy();
         }
-        memory = []
+        memory.segments = []
 
     }
 }
