@@ -43,28 +43,29 @@ Window {
                 var process = MemoryBackend.createProcess();
                 var segment = MemoryBackend.createSegment();
                 // segment 0
-                segment.seg_size = 20;
+                segment.seg_size = 70;
                 process.addSegment(segment);
 //                // segment 1
 //                segment.seg_size = 30;
 //                process.addSegment(segment);
 
                 MemoryBackend.add_process(process);
-
-
             }
         }
+
         Button {
             text: "Hole"
             property int i : 0
             onClicked: {
-                if (i < memory.totalSize-100) {
+                if (i < memory.totalSize-100 ) {
 
-                    var myHole = MemoryBackend.createHole();
-                    myHole.hole_address = i ;
-                    myHole.hole_size = 100;
+                    if (i != 500 && i !=700) {
+                        var myHole = MemoryBackend.createHole();
+                        myHole.hole_address = i ;
+                        myHole.hole_size = 100;
 
-                    MemoryBackend.add_hole(myHole)
+                        MemoryBackend.add_hole(myHole)
+                    }
                     i = i +100;
                 }
             }
@@ -95,7 +96,6 @@ Window {
             }
             
         }
-
 //        console.log("Dummiesssssssssssss");
 //        for(var j =0 ; j <dummies.length; j++) {
 //            console.log("dummy",j,dummies[j].seg_size);

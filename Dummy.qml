@@ -1,9 +1,9 @@
 import QtQuick 2.0
 
 Rectangle {
-    color: "black"
+    color: "white"
     width: parent.width
-    border.color: "green"
-    border.width: 5
+    border.color: "blue"
+    border.width: 2
 
 }

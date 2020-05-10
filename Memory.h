@@ -227,6 +227,8 @@ public:
             dummies.push_back(x);
         }
         sort_holes();
+
+        this->emitQml();
     }
     Q_INVOKABLE void deallocate_dummies(int id)
     {

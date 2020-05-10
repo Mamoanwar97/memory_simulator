@@ -7,7 +7,7 @@ Rectangle {
     height: parent.height
 
     border.color: "red"
-    border.width: 5
+    border.width: 2
     property double totalSize: 1
 
     // just to clear them next iteration
@@ -15,14 +15,11 @@ Rectangle {
 
     function addSegment(segment)
     {
-        var ratio = segment.seg_address / memory.totalSize;
-        var address = ratio * memory.height;
-        console.log("y_address:",segment.seg_address ,memory.totalSize , memory.height,"_____ ratio",ratio);
 
         var newSegment = Qt.createComponent("Segment.qml");
         var Segment    = newSegment.createObject(memory, {
-                                            height : segment.seg_size,
-                                            y :  address
+                                     height : Qt.binding(function() { return segment.seg_size / memory.totalSize * memory.height}),
+                                     y :  Qt.binding(function() { return segment.seg_address / memory.totalSize * memory.height})
                                         });
 
         memory.segments.push(Segment);
@@ -33,8 +30,8 @@ Rectangle {
     {
         var newSegment = Qt.createComponent("Dummy.qml");
         var Segment    = newSegment.createObject(memory, {
-                                            height : dummy.seg_size,
-                                            y : dummy
+                                           height : Qt.binding(function() { return dummy.seg_size / memory.totalSize * memory.height}),
+                                           y :  Qt.binding(function() { return dummy.seg_address / memory.totalSize * memory.height})
                                         })
         memory.segments.push(Segment);
     }
@@ -46,15 +43,14 @@ Rectangle {
         for (var i =0 ; i < processes.length; i ++)
         {
             var segments = processes[i].getSegments();
-            console.log("segments____",segments);
-
+            console.log(segments);
             for(var j =0 ; j < segments.length; j++) {
                 memory.addSegment(segments[j]);
             }
         }
 
         for(var j =0 ; j <dummies.length; j++) {
-            memory.addDummySegment(dummies[i]);
+            memory.addDummySegment(dummies[j]);
         }
     }
 
