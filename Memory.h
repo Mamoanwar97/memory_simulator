@@ -36,9 +36,8 @@ class process
     Q_GADGET
 public:
     vector<segment> segments;
-    Q_INVOKABLE QVariant getSegments() {
-        return QVariant::fromValue(this->segments);
-    }
+
+    Q_INVOKABLE QVariant getSegments() {return QVariant::fromValue(this->segments);}
     Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
 };
 Q_DECLARE_METATYPE(process);
@@ -49,7 +48,7 @@ class memory : public QObject
 {
     Q_OBJECT
 public:
-    // *********** DONT REMOVE ***************
+
     Q_INVOKABLE QVariant createHole()
     {
         hole x ;
@@ -81,14 +80,11 @@ private:
         QVariant Processes = QVariant::fromValue(this->processes);
         QVariant Dummies   = QVariant::fromValue(this->dummies);
 
-        emit sendProcesses(Processes);
-        emit sendDummies(Dummies);
+        emit updateMemoryQml(Processes,Dummies);
     }
 
 signals:
-    void sendProcesses(QVariant processes);
-    void sendDummies(QVariant dummies);
-
+    void updateMemoryQml(QVariant processes , QVariant dummies);
     /*  todo:
         holes:
             - private_function for de-allocating seqment and add this hole to the holes vector then sort
@@ -268,8 +264,8 @@ public:
         }
 
         this->emitQml();
-        this->print_dummies();
-        this->print_processes();
+//        this->print_dummies();
+//        this->print_processes();
         return true;
     }
 

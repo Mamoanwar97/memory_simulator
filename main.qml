@@ -9,6 +9,10 @@ Window {
     title: qsTr("Hello World")
     id : windowRay2
 
+    Component.onCompleted: {
+
+    }
+
     Row {
         Rectangle {
             width: 400
@@ -28,6 +32,7 @@ Window {
             onClicked: {
                 MemoryBackend.set_allocation_type("first");
                 MemoryBackend.set_size(1000);
+                memory.totalSize = 1000;
             }
         }
 
@@ -37,13 +42,12 @@ Window {
             onClicked: {
                 var process = MemoryBackend.createProcess();
                 var segment = MemoryBackend.createSegment();
-                console.log(process,segment);
-                segment.seg_size = 100;
-                segment.seg_address = 17;
-                segment.name = "ray2";
+                // segment 0
+                segment.seg_size = 20;
                 process.addSegment(segment);
-                segment.name = "ray2222";
-                process.addSegment(segment);
+//                // segment 1
+//                segment.seg_size = 30;
+//                process.addSegment(segment);
 
                 MemoryBackend.add_process(process);
 
@@ -52,44 +56,51 @@ Window {
         }
         Button {
             text: "Hole"
+            property int i : 0
             onClicked: {
-                var myHole = MemoryBackend.createHole();
-                myHole.hole_address = 70;
-                myHole.hole_size = 100;
+                if (i < memory.totalSize-100) {
 
-                MemoryBackend.add_hole(myHole)
+                    var myHole = MemoryBackend.createHole();
+                    myHole.hole_address = i ;
+                    myHole.hole_size = 100;
+
+                    MemoryBackend.add_hole(myHole)
+                    i = i +100;
+                }
             }
+        }
+        Button {
+            text: "Dymmy"
+            onClicked: MemoryBackend.allocate_dummies();
         }
     }
 
-    Component.onCompleted: {
-        memory.addSegment(50);
-        memory.addSegment(450);
-        memory.addDummySegment(150);
-    }
 
     Connections {
         target: MemoryBackend;
-        onSendProcesses : slotReceiveProcesses(processes);
-        onSendDummies   : slotReceiveDummies(dummies);
+        onUpdateMemoryQml :
+        {
+//            updateDrawing(processes,dummies);
+            memory.draw(processes,dummies);
+        }
     }
 
-    function slotReceiveProcesses (processes) {
+    function updateDrawing (processes,dummies) {
         for (var i =0 ; i < processes.length; i ++)
         {
             console.log("######## Process",i);
             var segments = processes[i].getSegments();
             for(var j =0 ; j < segments.length; j++) {
-                console.log("seg",j,segments[j].seg_size);
+                console.log("seg address:",i,segments[j].seg_address, ",size:",segments[j].seg_size);
             }
             
         }
+
+//        console.log("Dummiesssssssssssss");
+//        for(var j =0 ; j <dummies.length; j++) {
+//            console.log("dummy",j,dummies[j].seg_size);
+//        }
+
     }
 
-    function slotReceiveDummies (dummies) {
-        for(var j =0 ; j <dummies.length; j++) {
-            console.log("seg",j,dummies[j].seg_size);
-
-        }
-    }
 }

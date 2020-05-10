@@ -8,17 +8,20 @@ Rectangle {
 
     border.color: "red"
     border.width: 5
-    property int totalSize: 500
+    property int totalSize: 1
 
     // just to clear them next iteration
     property var segments: []
 
     function addSegment(segment)
     {
+        var address = (segment.seg_address / memory.totalSize) * memory.height;
+        console.log("y_address:",segment.seg_address ,memory.totalSize , memory.height);
+
         var newSegment = Qt.createComponent("Segment.qml");
         var Segment    = newSegment.createObject(memory, {
-                                            height : segment,
-                                            y : segment
+                                            height : segment.seg_size,
+                                            y :  address
                                         });
 
         memory.segments.push(Segment);
@@ -29,22 +32,26 @@ Rectangle {
     {
         var newSegment = Qt.createComponent("Dummy.qml");
         var Segment    = newSegment.createObject(memory, {
-                                            height : dummy,
+                                            height : dummy.seg_size,
                                             y : dummy
                                         })
         memory.segments.push(Segment);
     }
 
-    function draw( segments , dummies)
+    function draw( processes,dummies)
     {
         memory.clear();
 
-        for( var i = 0 ; i < segments.length ; i ++)
+        for (var i =0 ; i < processes.length; i ++)
         {
-            memory.addSegment(segments[i]);
+            var segments = processes[i].getSegments();
+            for(var j =0 ; j < segments.length; j++) {
+                memory.addSegment(segments[i]);
+            }
+
         }
-        for( var i = 0 ; i < dummies.length ; i ++)
-        {
+
+        for(var j =0 ; j <dummies.length; j++) {
             memory.addDummySegment(dummies[i]);
         }
     }
