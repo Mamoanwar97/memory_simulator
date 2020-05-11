@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.0
-
+import QtQuick.Controls 1.4
 Window {
     visible: true
     width: 1280
@@ -12,6 +12,47 @@ Window {
     Component.onCompleted: {
 
     }
+    TableView {
+           y:parent.height
+           width: parent.width/2.84
+           anchors.verticalCenter : parent.verticalCenter
+           anchors.horizontalCenter: parent.horizontalCenter
+
+           TableViewColumn {
+               role: "Name"
+               title: "Segmant Name"
+               width: 150
+           }
+           TableViewColumn {
+               role: "Address"
+               title: "Segmant Address"
+               width: 150
+           }
+
+           TableViewColumn{
+               role: "Size"
+               title: "Segmant Limit"
+               width: 150
+           }
+
+           Component.onCompleted: {
+              /* for (var i = 0; i < 10; i++) {
+                   process.addSegment(i,i,i);
+               }*/
+
+           }
+
+           model: processtable
+
+           ListModel {
+               id: processtable
+               function addSegment(SegmentName,SegmentSize,SegmentAddress)
+               {
+                  processtable.append({"Name": SegmentName,"Size": SegmentSize,"Address":SegmentAddress})
+
+               }
+           }
+       }
 
     Row {
         Rectangle {
@@ -25,7 +66,7 @@ Window {
         // just for testing
         Button {
             text: "clear"
-            onClicked: memory.clear();
+            onClicked: {memory.clear();processtable.clear();}
         }
         Button {
             text: "Size-Type"
@@ -44,12 +85,23 @@ Window {
                 var segment = MemoryBackend.createSegment();
                 // segment 0
                 segment.seg_size = 70;
+                segment.name ="code";
+                process.addSegment(segment);
+                segment.seg_size = 100;
+                segment.name ="Data";
+                process.addSegment(segment);
+                segment.seg_size = 150;
+                segment.name ="Variables";
                 process.addSegment(segment);
 //                // segment 1
 //                segment.seg_size = 30;
 //                process.addSegment(segment);
 
                 MemoryBackend.add_process(process);
+                for (var i = 0; i < process.size() ;i++) {
+                                   processtable.addSegment(process.getSegmentName(i),process.getSegmentSize(i),process.getSegmentAddress(i));
+                               }
+
             }
         }
 
