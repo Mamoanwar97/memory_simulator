@@ -24,9 +24,9 @@ public:
     void setName(const QString& name) {this->name= name.toStdString();}
     void setSize(const int& size) {this->seg_size = size;}
     void setAddress(const int& add) {this->seg_address = add;}
-    int getSize() {return this->seg_size;}
-    int getAddress() {return this->seg_address;}
-    QString getName() {return QString::fromStdString(this->name);}
+    Q_INVOKABLE  int getSize() {return this->seg_size;}
+    Q_INVOKABLE int getAddress() {return this->seg_address;}
+    Q_INVOKABLE  QString getName() {return QString::fromStdString(this->name);}
 };
 Q_DECLARE_METATYPE(segment);
 
@@ -35,10 +35,14 @@ class process
 {
     Q_GADGET
 public:
-    vector<segment> segments;
+   Q_INVOKABLE vector<segment> segments;
 
     Q_INVOKABLE QVariant getSegments() {return QVariant::fromValue(this->segments);}
     Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
+    Q_INVOKABLE QString getSegmentName(int i) { return segments[i].getName();}
+    Q_INVOKABLE  int getSegmentSize(int i) {return  segments[i].getSize();}
+    Q_INVOKABLE int getSegmentAddress(int i) {return segments[i].getAddress();}
+    Q_INVOKABLE int size() {return segments.size();}
 };
 Q_DECLARE_METATYPE(process);
 
@@ -48,6 +52,7 @@ class memory : public QObject
 {
     Q_OBJECT
 public:
+
 
     Q_INVOKABLE QVariant createHole()
     {
@@ -65,15 +70,31 @@ public:
         process x;
         return QVariant::fromValue(x);
     }
+    Q_INVOKABLE QVariant getProcessName(int i)
+    {
+        return processes[i].getSegments();
+    }
+    Q_INVOKABLE QString getSegmentName(int i,int j)
+    {
+        return processes[i].getSegmentName(j);
+    }
+    Q_INVOKABLE int getSegmentSize(int i,int j)
+    {
+        return processes[i].getSegmentSize(j);
+    }
+    Q_INVOKABLE int getSegmentAddress(int i,int j)
+    {
+        return processes[i].getSegmentAddress(j);
+    }
 
 
 private:
     int memory_size;
+    Q_INVOKABLE vector<hole> holes;
+    Q_INVOKABLE vector<process> processes;
+    Q_INVOKABLE vector<segment> dummies;
+    Q_INVOKABLE string allocation_type;
 
-    vector<hole> holes;
-    vector<process> processes;
-    vector<segment> dummies;
-    string allocation_type;
 
     void emitQml() {
 
