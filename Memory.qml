@@ -24,6 +24,12 @@ Rectangle {
 
         memory.segments.push(Segment);
     }
+    function getSegmentName(segment)
+    {
+
+
+        memory.segments.valueOf(segment);
+    }
 
 
     function addDummySegment( dummy )
