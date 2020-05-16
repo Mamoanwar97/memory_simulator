@@ -1,7 +1,8 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtQuick.Controls 2.0
 import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
+
 Window {
     visible: true
     width: 1280
@@ -11,49 +12,131 @@ Window {
 
     Component.onCompleted: {
 
+
     }
+
     TableView {
-           y:parent.height
-           width: parent.width/2.84
-           anchors.verticalCenter : parent.verticalCenter
-           anchors.horizontalCenter: parent.horizontalCenter
+        id:mytable
+        y:parent.height
+        width: parent.width/2.84
+        anchors.verticalCenter : parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
 
-           TableViewColumn {
-               role: "Name"
-               title: "Segmant Name"
-               width: 150
-           }
-           TableViewColumn {
-               role: "Address"
-               title: "Segmant Address"
-               width: 150
-           }
+        TableViewColumn {
+            role: "Name"
+            title: "Segmant Name"
+            width: 150
+        }
+        TableViewColumn {
+            role: "Address"
+            title: "Segmant Address"
+            width: 150
+        }
 
-           TableViewColumn{
-               role: "Size"
-               title: "Segmant Limit"
-               width: 150
-           }
+        TableViewColumn{
+            role: "Size"
+            title: "Segmant Limit"
+            width: 150
+        }
+        TabBar {
+            property int checkedProcess
+            id:tabBar
+            anchors.bottom:  mytable.top
+        }
+        Component {
 
-           Component.onCompleted: {
-              /* for (var i = 0; i < 10; i++) {
-                   process.addSegment(i,i,i);
-               }*/
+            id: tabButton
+            TabButton {
+                text: ""
+                onClicked: {fillSegmentationTable(text[1]);tabBar.checkedProcess=text[1];}
+            }
+        }
+        Component.onCompleted: {
+        }
 
-           }
+        model: processtable
 
-           model: processtable
+        ListModel {
+            id: processtable
 
-           ListModel {
-               id: processtable
-               function addSegment(SegmentName,SegmentSize,SegmentAddress)
-               {
-                  processtable.append({"Name": SegmentName,"Size": SegmentSize,"Address":SegmentAddress})
+            function addSegment(SegmentName,SegmentSize,SegmentAddress)
+            {
+                processtable.append({"Name": SegmentName,"Size": SegmentSize,"Address":SegmentAddress})
 
-               }
-           }
-       }
+            }
+            function addProcess()
+            {
+                for(var i=0;i<10;i++)
+                {
+                    processtable.append({"Name": "","Size": "","Address":""})
 
+                }
+            }
+
+        }
+    }
+    TableView{
+        id:inputTable
+        y:parent.height
+        width: parent.width/2.84
+        anchors.verticalCenter : parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        visible: false
+        Repeater{
+            model:5
+            Row{
+                y:index*30
+                id:row
+                Rectangle{
+                    x:0
+                    width: 150
+                    height:30
+                    border.width: 2
+                    border.color:"grey"
+                    TextInput{
+                        anchors.fill:parent
+                        verticalAlignment: Qt.AlignVCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        text: ""
+                        onTextChanged: MemoryBackend.set_inputProcess_segment_Name(index,text)
+                    }
+                }
+                Rectangle{
+                    x:200
+                    width: 150
+                    height:30
+                    border.width: 2
+                    border.color: "grey"
+                    TextInput{
+                        anchors.fill:parent
+                        verticalAlignment: Qt.AlignVCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        onTextChanged: MemoryBackend.set_inputProcess_segment_Address(index,Number(text))
+                    }
+                }
+                Rectangle{
+                    x:350
+                    width: 150
+                    height:30
+                    border.width: 2
+                    border.color: "grey"
+                    TextInput{
+                        anchors.fill:parent
+                        verticalAlignment: Qt.AlignVCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        onTextChanged: MemoryBackend.set_inputProcess_segment_size(index,Number(text))
+                    }
+                }
+
+            }
+
+        }
+    }
+    Text {
+        id: mytext
+        text: qsTr("text")
+    }
     Row {
         Rectangle {
             width: 400
@@ -66,7 +149,7 @@ Window {
         // just for testing
         Button {
             text: "clear"
-            onClicked: {memory.clear();processtable.clear();}
+            onClicked: {memory.clear();processtable.clear();tabBar.clear();}
         }
         Button {
             text: "Size-Type"
@@ -83,26 +166,10 @@ Window {
             onClicked: {
                 var process = MemoryBackend.createProcess();
                 var segment = MemoryBackend.createSegment();
-                // segment 0
-                segment.seg_size = 70;
-                segment.name ="code";
-                process.addSegment(segment);
-                segment.seg_size = 100;
-                segment.name ="Data";
-                process.addSegment(segment);
-                segment.seg_size = 150;
-                segment.name ="Variables";
-                process.addSegment(segment);
-//                // segment 1
-//                segment.seg_size = 30;
-//                process.addSegment(segment);
 
-                MemoryBackend.add_process(process);
-                for (var i = 0; i < process.size() ;i++) {
-                                   processtable.addSegment(process.getSegmentName(i),process.getSegmentSize(i),process.getSegmentAddress(i));
-                               }
 
             }
+
         }
 
         Button {
@@ -114,7 +181,7 @@ Window {
                     if (i != 500 && i !=700) {
                         var myHole = MemoryBackend.createHole();
                         myHole.hole_address = i ;
-                        myHole.hole_size = 100;
+                        myHole.hole_size = 600;
 
                         MemoryBackend.add_hole(myHole)
                     }
@@ -126,14 +193,51 @@ Window {
             text: "Dymmy"
             onClicked: MemoryBackend.allocate_dummies();
         }
-    }
 
+    }
+    Button {
+        id:addProcess
+        text: "Add Process"
+        anchors.horizontalCenter: mytable.horizontalCenter
+        anchors.top: mytable.bottom
+        onClicked: {
+            //processtable.clear();
+            mytable.visible=false;
+            inputTable.visible=true;
+            MemoryBackend.set_inputProcess();
+
+        }
+    }
+    Button {
+        id:deallocate
+        text: "deallocate"
+        anchors.left: addProcess.right
+        anchors.verticalCenter: addProcess.verticalCenter
+        onClicked: {processtable.clear();
+            clearTab(tabBar.checkedProcess);
+            MemoryBackend.removeProcess(tabBar.checkedProcess);
+        }
+    }
+    Button {
+        id:verify
+        text: "verify"
+        anchors.right: addProcess.left
+        anchors.verticalCenter: addProcess.verticalCenter
+        onClicked: {
+            mytable.visible=true;
+            inputTable.visible=false;
+            MemoryBackend.addProcess();
+            var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getNumProcess()-1)})
+            tabBar.addItem(Button1);
+
+        }
+    }
 
     Connections {
         target: MemoryBackend;
         onUpdateMemoryQml :
         {
-//            updateDrawing(processes,dummies);
+            //            updateDrawing(processes,dummies);
             memory.draw(processes,dummies);
         }
     }
@@ -148,10 +252,32 @@ Window {
             }
             
         }
-//        console.log("Dummiesssssssssssss");
-//        for(var j =0 ; j <dummies.length; j++) {
-//            console.log("dummy",j,dummies[j].seg_size);
-//        }
+        //        console.log("Dummiesssssssssssss");
+        //        for(var j =0 ; j <dummies.length; j++) {
+        //            console.log("dummy",j,dummies[j].seg_size);
+        //        }
+
+    }
+    function fillSegmentationTable(processNumber)
+    {
+        processtable.clear();
+        var segments = MemoryBackend.getProcess(processNumber);
+        for(var j =0 ; j < segments.length; j++) {
+            processtable.set(j,{"Name": segments[j].name,"Size": segments[j].seg_size,"Address":segments[j].seg_address})
+
+        }
+    }
+    function clearTab(process)
+    {
+        tabBar.removeItem(process);
+
+    }
+    function getinput()
+    {
+        for(var j =0 ; j < 5; j++) {
+
+
+        }
 
     }
 

@@ -6,7 +6,7 @@
 #include <QVariant>
 #include "hole.h"
 #include "sort.h"
-
+#include<QDebug>
 using namespace std;
 
 class segment
@@ -35,8 +35,9 @@ class process
 {
     Q_GADGET
 public:
-   Q_INVOKABLE vector<segment> segments;
-
+    Q_INVOKABLE vector<segment> segments;
+    Q_INVOKABLE int id;
+    Q_INVOKABLE void setID(int x){this->id=x;}
     Q_INVOKABLE QVariant getSegments() {return QVariant::fromValue(this->segments);}
     Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
     Q_INVOKABLE QString getSegmentName(int i) { return segments[i].getName();}
@@ -52,7 +53,10 @@ class memory : public QObject
 {
     Q_OBJECT
 public:
-
+    Q_INVOKABLE vector<hole> holes;
+    Q_INVOKABLE vector<process> processes;
+    Q_INVOKABLE vector<segment> dummies;
+    Q_INVOKABLE string allocation_type;
 
     Q_INVOKABLE QVariant createHole()
     {
@@ -64,6 +68,10 @@ public:
         segment x ;
         return QVariant::fromValue(x);
     }
+    Q_INVOKABLE QVariant getProcess(int i)
+    {
+        return processes[i].getSegments();
+    }
 
     Q_INVOKABLE QVariant createProcess()
     {
@@ -73,6 +81,10 @@ public:
     Q_INVOKABLE QVariant getProcessName(int i)
     {
         return processes[i].getSegments();
+    }
+    Q_INVOKABLE int getProcessID(int i)
+    {
+        return processes[i].id;
     }
     Q_INVOKABLE QString getSegmentName(int i,int j)
     {
@@ -86,14 +98,14 @@ public:
     {
         return processes[i].getSegmentAddress(j);
     }
+    Q_INVOKABLE int getNumProcess()
+    {
+        return processes.size();
+    }
 
 
 private:
     int memory_size;
-    Q_INVOKABLE vector<hole> holes;
-    Q_INVOKABLE vector<process> processes;
-    Q_INVOKABLE vector<segment> dummies;
-    Q_INVOKABLE string allocation_type;
 
 
     void emitQml() {
@@ -200,7 +212,8 @@ private:
     }
     void deallocate_process(int id)
     {
-        for(int i=0; i< processes[id].segments.size(); i++)
+        int size = processes[id].segments.size();
+        for(int i=0; i< size; i++)
         {
             delete_segment(id, i);
         }
@@ -208,6 +221,49 @@ private:
 
 public:
     memory() : QObject() { cout << "Mss" << endl; }
+
+    process inputProcess;
+    segment inputSegment[5];
+    Q_INVOKABLE void set_inputProcess()
+    {
+        if(inputProcess.size()==5)
+        {
+
+        }
+        else{
+        for(int i=0 ;i<5;i++)
+        {
+            inputSegment[i].setName("");
+            inputSegment[i].setAddress(0);
+            inputSegment[i].setSize(0);
+
+            inputProcess.addSegment(inputSegment[i]);
+        }
+        }
+    }
+    Q_INVOKABLE void set_inputProcess_segment_Name(int i,QString Name)
+    {
+        inputProcess.segments[i].setName(Name);
+        qDebug() << inputProcess.segments[i].getName() <<endl;
+    }
+    Q_INVOKABLE void set_inputProcess_segment_size(int i,int size)
+    {
+
+        inputProcess.segments[i].setSize(size);
+        qDebug() << inputProcess.segments[i].getSize() <<endl;
+    }
+    Q_INVOKABLE void set_inputProcess_segment_Address(int i,int address)
+    {
+        inputProcess.segments[i].setAddress(address);
+        qDebug() << inputProcess.segments[i].getAddress() <<endl;
+    }
+    Q_INVOKABLE void addProcess()
+    {
+        bool x = add_process(inputProcess);
+        emitQml();
+        inputProcess.segments.clear();
+
+    }
 
     //Set first fit or best fit
     Q_INVOKABLE void set_allocation_type(QString type)
@@ -272,10 +328,10 @@ public:
 
     Q_INVOKABLE bool add_process(process p)
     {
-//        cout << "process to be added "  << endl;
-//        for(int i =0 ;  i < p.segments.size(); i++)
-//            cout << p.segments[i].name <<" ";
-//        cout << endl;
+        //        cout << "process to be added "  << endl;
+        //        for(int i =0 ;  i < p.segments.size(); i++)
+        //            cout << p.segments[i].name <<" ";
+        //        cout << endl;
 
         processes.push_back(p);
         bool x = allocate_process(processes.size()-1);
@@ -287,8 +343,8 @@ public:
         }
 
         this->emitQml();
-//        this->print_dummies();
-//        this->print_processes();
+        //        this->print_dummies();
+        //        this->print_processes();
         return true;
     }
 
@@ -296,6 +352,7 @@ public:
     {
         deallocate_process(id);
         processes.erase(processes.begin()+(id));
+        this->emitQml();
     }
     void print_segment(int process_id, int segment_id)
     {
@@ -335,6 +392,27 @@ public:
             cout << "dummy: " << i << " address: " << dummies[i].seg_address << "    size: " << dummies[i].seg_size << endl;
         }
         cout << "------------------------------------------------------------------------------------------------------" << endl;
+    }
+    int getID(int j)
+    {
+        for(int i = 0; i < processes.size(); i++)
+        {
+            if(processes[i].id==j)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+    Q_INVOKABLE void removeProcess(int id)
+    {
+        int x= getID(id);
+        qDebug() << x;
+        if(x!=-1)
+        {
+            processes.erase(processes.begin()+x);
+        }
+        emitQml();
     }
 };
 
