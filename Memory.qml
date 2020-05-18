@@ -3,7 +3,7 @@ import QtQuick 2.0
 Rectangle {
 
     id : memory
-    width: 300
+    width: 250
     height: parent.height
 
     border.color: "red"
