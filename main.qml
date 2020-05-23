@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 1.4
 import QtQuick.Controls 2.0
-
+import QtQuick.Layouts 1.0
 Window {
     visible: true
     width: 1280
@@ -122,62 +122,153 @@ Window {
     }
 
 
-
-
-
-
     Row {
+        width: 300
+        height: windowRay2.height
+        //        Rectangle{
+        //            width: parent.width
+        //            height: 30
+        //            color: "#303841"
+        //            border.width: 1
+        //            border.color: "#eeeeee"
+        //            Text {
+        //                anchors.centerIn: parent
+        //                id: name
+        //                text: qsTr("Memory")
+        //                color: "#eeeeee"
+        //            }
+        //        }
         Rectangle {
-            width: 300
-            height: windowRay2.height
+            width: parent.width
+            height: parent.height -30
             Memory {
                 id:memory
             }
         }
 
-        // just for testing
-        Button {
-            text: "clear"
-//            onClicked: {memory.clear();processtable.clear();tabBar.clear();}
-            onClicked: {repeater.model=8;}
-        }
-        Button {
-            text: "Size-Type"
-            onClicked: {
-                MemoryBackend.set_allocation_type("first");
-                MemoryBackend.set_size(1000);
-                memory.totalSize = 1000;
-            }
-        }
 
-        Button {
-            text: "Add Hole"
-            property int i : 0
-            onClicked: {
-                if(memory.totalSize == 1)
-                {
-                    console.log("Set the Size and Type");
-                    return;
+        Rectangle {
+            width: windowRay2.width/3
+            height: windowRay2.height/3
+            color:"#303841"
+            radius: 10
+
+            GridLayout {
+                anchors.fill:  parent
+                id:grid
+                rows: 3
+                columns : 6
+
+                Button {
+                    text: "Start"
+                    onClicked: MemoryBackend.allocate_dummies();
+                    Layout.row: 0
+                    Layout.column: 3
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 3
+                    Layout.minimumWidth: grid.width/2
+                    //                    Layout.preferredWidth: grid.width/2
                 }
 
-                if (i < memory.totalSize-100 ) {
+                Button {
+                    text: "Clear"
+                    onClicked: {memory.clear();processtable.clear();tabBar.clear();}
+                    Layout.row: 0
+                    Layout.column: 0
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 3
+                    Layout.minimumWidth: grid.width/2
+                    //                    Layout.preferredWidth: grid.width/2
+                }
 
-                    if (i != 500 && i !=700) {
-                        var myHole = MemoryBackend.createHole();
-                        myHole.hole_address = i ;
-                        myHole.hole_size = 100;
+                TextField {
+                    id: holeAddress
+                    placeholderText: "Address"
+                    Layout.row: 1
+                    Layout.column: 0
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+//                    Layout.fillWidth: true
+                    Layout.preferredWidth: grid.width/3
+                }
+                TextField {
+                    id: holeSize
+                    placeholderText: "Size"
+                    Layout.row: 1
+                    Layout.column: 2
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+//                    Layout.fillWidth: true
+                    Layout.preferredWidth: grid.width/3
+                }
+                Button {
+                    Layout.row: 1
+                    Layout.column: 4
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+                    Layout.preferredWidth: grid.width/3
 
-                        MemoryBackend.add_hole(myHole)
+
+                    text: "Add Hole"
+                    property int i : 0
+                    onClicked: {
+                        if(memory.totalSize == 1)
+                        {
+                            console.log("Set the Size and Type");
+                            return;
+                        }
+
+                        if (i < memory.totalSize-100 ) {
+
+                            if (i != 500 && i !=700) {
+                                var myHole = MemoryBackend.createHole();
+                                myHole.hole_address = i ;
+                                myHole.hole_size = 100;
+
+                                MemoryBackend.add_hole(myHole)
+                            }
+                            i = i +100;
+                        }
                     }
-                    i = i +100;
+                }
+                TextField {
+                    placeholderText: "Total Size"
+                    id:setSize
+                    Layout.row: 2
+                    Layout.column: 0
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+                    Layout.preferredWidth: grid.width/3
+                }
+                ComboBox {
+                    id: selectType
+                    Layout.row: 2
+                    Layout.column: 2
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+                    Layout.preferredWidth: grid.width/3
+                    model: ["first" , "fittest" ]
+
+                }
+                Button {
+                    Layout.row: 2
+                    Layout.column: 4
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+                    Layout.preferredWidth: grid.width/3
+
+                    text: "Set Size,Type"
+                    onClicked: {
+                        MemoryBackend.set_allocation_type( selectType.currentText );
+                        MemoryBackend.set_size( parseInt(setSize.text) );
+                        memory.totalSize = parseInt(setSize.text);
+                    }
                 }
             }
-        }
-        Button {
-            text: "Start"
-            onClicked: MemoryBackend.allocate_dummies();
         }
     }
+
+
     Button {
         id:addProcess
         text: "Add Process"
@@ -261,7 +352,5 @@ Window {
 
 
         }
-
     }
-
 }
