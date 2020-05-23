@@ -63,19 +63,18 @@ Window {
             function addSegment(SegmentName,SegmentSize,SegmentAddress)
             {
                 processtable.append({"Name": SegmentName,"Size": SegmentSize,"Address":SegmentAddress})
-
             }
             function addProcess()
             {
                 for(var i=0;i<10;i++)
                 {
                     processtable.append({"Name": "","Size": "","Address":""})
-
                 }
             }
         }
     }
-    TableView{
+
+    TableView {
         id:inputTable
         y:parent.height
         width: parent.width/2.84
@@ -122,6 +121,11 @@ Window {
         }
     }
 
+
+
+
+
+
     Row {
         Rectangle {
             width: 300
@@ -134,7 +138,8 @@ Window {
         // just for testing
         Button {
             text: "clear"
-            onClicked: {memory.clear();processtable.clear();tabBar.clear();}
+//            onClicked: {memory.clear();processtable.clear();tabBar.clear();}
+            onClicked: {repeater.model=8;}
         }
         Button {
             text: "Size-Type"
@@ -189,7 +194,7 @@ Window {
     }
     Button {
         id:deallocate
-        text: "deallocate"
+        text: "Deallocate"
         anchors.left: addProcess.right
         anchors.verticalCenter: addProcess.verticalCenter
         onClicked: {processtable.clear();
@@ -199,16 +204,24 @@ Window {
     }
     Button {
         id:verify
-        text: "verify"
+        text: "Allocate"
         anchors.right: addProcess.left
         anchors.verticalCenter: addProcess.verticalCenter
         onClicked: {
             mytable.visible=true;
             inputTable.visible=false;
             MemoryBackend.addProcess();
-            var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getNumProcess()-1)})
-            tabBar.addItem(Button1);
-
+            if( MemoryBackend.getNumProcess() != 0 )
+            {
+                var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getNumProcess()-1)})
+                tabBar.addItem(Button1);
+                inputTable.clear();
+                return;
+            }
+            else
+            {
+                console.log("Can not appent empty process")
+            }
         }
     }
 
@@ -229,21 +242,15 @@ Window {
             for(var j =0 ; j < segments.length; j++) {
                 console.log("seg address:",i,segments[j].seg_address, ",size:",segments[j].seg_size);
             }
-            
         }
-        //        console.log("Dummiesssssssssssss");
-        //        for(var j =0 ; j <dummies.length; j++) {
-        //            console.log("dummy",j,dummies[j].seg_size);
-        //        }
-
     }
     function fillSegmentationTable(processNumber)
     {
         processtable.clear();
         var segments = MemoryBackend.getProcess(processNumber);
         for(var j =0 ; j < segments.length; j++) {
-            processtable.set(j,{"Name": segments[j].name,"Size": segments[j].seg_size,"Address":segments[j].seg_address})
-
+            if (segments[j].seg_size != 0)
+                processtable.set(j,{"Name": segments[j].name,"Size": segments[j].seg_size,"Address":segments[j].seg_address})
         }
     }
     function clearTab(process)
