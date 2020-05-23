@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE vector<segment> segments;
     Q_INVOKABLE int id;
     Q_INVOKABLE void setID(int x){this->id=x;}
+    Q_INVOKABLE int getID() {return this->id;}
     Q_INVOKABLE QVariant getSegments() {return QVariant::fromValue(this->segments);}
     Q_INVOKABLE void addSegment(segment newSegment) { this->segments.push_back(newSegment);}
     Q_INVOKABLE QString getSegmentName(int i) { return segments[i].getName();}
@@ -316,6 +317,8 @@ public:
         holes.push_back(x);
         dummies.erase(dummies.begin()+ id);
         combine_holes();
+
+        this->emitQml();
     }
     Q_INVOKABLE void add_hole(hole x)
     {

@@ -7,12 +7,13 @@ Window {
     visible: true
     width: 1280
     height: 720
+    minimumHeight: 720
+    minimumWidth: 1280
     title: qsTr("Hello World")
     id : windowRay2
+    color: "#303841"
 
     Component.onCompleted: {
-
-
     }
 
     TableView {
@@ -72,7 +73,6 @@ Window {
 
                 }
             }
-
         }
     }
     TableView{
@@ -83,14 +83,15 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
 
         visible: false
-        Repeater{
+        Repeater {
+            id: repeater
             model:5
-            Row{
+            Row {
                 y:index*30
                 id:row
                 Rectangle{
                     x:0
-                    width: 150
+                    width: inputTable.width/2
                     height:30
                     border.width: 2
                     border.color:"grey"
@@ -103,21 +104,8 @@ Window {
                     }
                 }
                 Rectangle{
-                    x:200
-                    width: 150
-                    height:30
-                    border.width: 2
-                    border.color: "grey"
-                    TextInput{
-                        anchors.fill:parent
-                        verticalAlignment: Qt.AlignVCenter
-                        horizontalAlignment: Qt.AlignHCenter
-                        onTextChanged: MemoryBackend.set_inputProcess_segment_Address(index,Number(text))
-                    }
-                }
-                Rectangle{
                     x:350
-                    width: 150
+                    width: inputTable.width/2
                     height:30
                     border.width: 2
                     border.color: "grey"
@@ -133,13 +121,10 @@ Window {
 
         }
     }
-    Text {
-        id: mytext
-        text: qsTr("text")
-    }
+
     Row {
         Rectangle {
-            width: 400
+            width: 300
             height: windowRay2.height
             Memory {
                 id:memory
@@ -161,27 +146,21 @@ Window {
         }
 
         Button {
-            id : btn
-            text: "Process"
-            onClicked: {
-                var process = MemoryBackend.createProcess();
-                var segment = MemoryBackend.createSegment();
-
-
-            }
-
-        }
-
-        Button {
             text: "Hole"
             property int i : 0
             onClicked: {
+                if(memory.totalSize == 1)
+                {
+                    console.log("Set the Size and Type");
+                    return;
+                }
+
                 if (i < memory.totalSize-100 ) {
 
                     if (i != 500 && i !=700) {
                         var myHole = MemoryBackend.createHole();
                         myHole.hole_address = i ;
-                        myHole.hole_size = 600;
+                        myHole.hole_size = 100;
 
                         MemoryBackend.add_hole(myHole)
                     }
@@ -190,7 +169,7 @@ Window {
             }
         }
         Button {
-            text: "Dymmy"
+            text: "Start"
             onClicked: MemoryBackend.allocate_dummies();
         }
 

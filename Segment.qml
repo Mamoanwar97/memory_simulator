@@ -2,19 +2,16 @@ import QtQuick 2.0
 
 Rectangle {
     width: parent.width
-    color: "gray"
-
+    color: "#00adb5"
+    property string name: ""
     border.width: 2
-    border.color: "green"
+    border.color: "#eeeeee"
     Row {
         anchors.centerIn: parent
         Text {
-            id: process
-            text: ""
-        }
-        Text {
-            id: segment
-            text: ""
+            id: text
+            text: name
+            color: "#eeeeee"
         }
     }
 }
