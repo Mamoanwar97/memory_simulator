@@ -50,7 +50,8 @@ Rectangle {
             var segments = processes[i].getSegments();
             console.log(segments);
             for(var j =0 ; j < segments.length; j++) {
-                memory.addSegment(segments[j],processes[i].getID());
+                if(segments[j].seg_size != 0)
+                    memory.addSegment(segments[j],processes[i].getID());
             }
         }
 

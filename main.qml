@@ -151,7 +151,7 @@ Window {
         }
 
         Button {
-            text: "Hole"
+            text: "Add Hole"
             property int i : 0
             onClicked: {
                 if(memory.totalSize == 1)
@@ -177,7 +177,6 @@ Window {
             text: "Start"
             onClicked: MemoryBackend.allocate_dummies();
         }
-
     }
     Button {
         id:addProcess
@@ -189,7 +188,6 @@ Window {
             mytable.visible=false;
             inputTable.visible=true;
             MemoryBackend.set_inputProcess();
-
         }
     }
     Button {
@@ -215,7 +213,6 @@ Window {
             {
                 var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getNumProcess()-1)})
                 tabBar.addItem(Button1);
-                inputTable.clear();
                 return;
             }
             else
