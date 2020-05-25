@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE vector<process> processes;
     Q_INVOKABLE vector<segment> dummies;
     Q_INVOKABLE string allocation_type;
+    int GlobalID=0;
 
     Q_INVOKABLE QVariant createHole()
     {
@@ -71,7 +72,8 @@ public:
     }
     Q_INVOKABLE QVariant getProcess(int i)
     {
-        return processes[i].getSegments();
+        int x=getID(i);
+        return processes[x].getSegments();
     }
 
     Q_INVOKABLE QVariant createProcess()
@@ -86,6 +88,10 @@ public:
     Q_INVOKABLE int getProcessID(int i)
     {
         return processes[i].id;
+    }
+    Q_INVOKABLE int getinputProcessID()
+    {
+        return inputProcess.id;
     }
     Q_INVOKABLE QString getSegmentName(int i,int j)
     {
@@ -227,11 +233,8 @@ public:
     segment inputSegment[5];
     Q_INVOKABLE void set_inputProcess()
     {
-        if(inputProcess.size()==5)
-        {
 
-        }
-        else{
+        inputProcess.setID(GlobalID++);
         for(int i=0 ;i<5;i++)
         {
             inputSegment[i].setName("");
@@ -240,7 +243,7 @@ public:
 
             inputProcess.addSegment(inputSegment[i]);
         }
-        }
+
     }
     Q_INVOKABLE void set_inputProcess_segment_Name(int i,QString Name)
     {
@@ -258,11 +261,11 @@ public:
         inputProcess.segments[i].setAddress(address);
         qDebug() << inputProcess.segments[i].getAddress() <<endl;
     }
-    Q_INVOKABLE void addProcess()
+    Q_INVOKABLE bool addProcess()
     {
         bool x = add_process(inputProcess);
+        return x;
         emitQml();
-        inputProcess.segments.clear();
 
     }
 
@@ -341,6 +344,7 @@ public:
         if(!x)
         {
             processes.pop_back();
+            GlobalID--;
             cout << "didn't allocate process" << endl;
             return false;
         }
@@ -411,11 +415,19 @@ public:
     {
         int x= getID(id);
         qDebug() << x;
+        hole j;
+
         if(x!=-1)
         {
+            j.set_addr(processes[x].getSegmentAddress(0));
+            j.setSize(processes[x].getSegmentAddress(processes[x].size()-1)+processes[x].getSegmentSize(processes[x].size()-1));
+            deallocate_process(id);
             processes.erase(processes.begin()+x);
+            holes.push_back(j);
+            combine_holes();
+            emitQml();
         }
-        emitQml();
+
     }
 };
 

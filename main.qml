@@ -55,7 +55,7 @@ Window {
                     width: 150
                 }
                 TabBar {
-                    property int checkedProcess
+                    property int processID
                     id:tabBar
                     anchors.bottom:  mytable.top
                 }
@@ -64,7 +64,7 @@ Window {
                     id: tabButton
                     TabButton {
                         text: ""
-                        onClicked: {fillSegmentationTable(text[1]);tabBar.checkedProcess=text[1];}
+                        onClicked: {fillSegmentationTable(Number(text[1]));tabBar.processID=Number(text[1]);}
                     }
                 }
                 Component.onCompleted: {
@@ -152,16 +152,14 @@ Window {
                     onClicked: {
                         mytable.visible=true;
                         inputTable.visible=false;
-                        MemoryBackend.addProcess();
-                        if( MemoryBackend.getNumProcess() != 0 )
+                        if( MemoryBackend.addProcess())
                         {
-                            var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getNumProcess()-1)})
+                            var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getinputProcessID())})
                             tabBar.addItem(Button1);
-                            return;
                         }
                         else
                         {
-                            console.log("Can not appent empty process")
+                            console.log("Can not append process")
                         }
                     }
                 }
@@ -179,8 +177,8 @@ Window {
                     id:deallocate
                     text: "Deallocate"
                     onClicked: {processtable.clear();
-                        clearTab(tabBar.checkedProcess);
-                        MemoryBackend.removeProcess(tabBar.checkedProcess);
+                        tabBar.removeItem(tabBar.currentIndex);
+                        MemoryBackend.removeProcess(tabBar.processID);
                     }
                 }
             }
@@ -366,11 +364,7 @@ Window {
                 processtable.set(j,{"Name": segments[j].name,"Size": segments[j].seg_size,"Address":segments[j].seg_address})
         }
     }
-    function clearTab(process)
-    {
-        tabBar.removeItem(process);
 
-    }
     function getinput()
     {
         for(var j =0 ; j < 5; j++) {
