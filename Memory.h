@@ -285,6 +285,7 @@ public:
     {
         sort(holes.begin(),holes.end(), sortByFirst);
 
+        dummies.clear();
         int index = 0;
 
         for(int i = 0; i < holes.size(); i++)
