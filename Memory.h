@@ -230,19 +230,28 @@ public:
     memory() : QObject() { cout << "Mss" << endl; }
 
     process inputProcess;
-    segment inputSegment[5];
+    segment inputSegment;
     Q_INVOKABLE void set_inputProcess()
     {
 
         inputProcess.setID(GlobalID++);
-        for(int i=0 ;i<5;i++)
-        {
-            inputSegment[i].setName("");
-            inputSegment[i].setAddress(0);
-            inputSegment[i].setSize(0);
 
-            inputProcess.addSegment(inputSegment[i]);
-        }
+        inputSegment.setName("");
+        inputSegment.setAddress(0);
+        inputSegment.setSize(0);
+        inputProcess.addSegment(inputSegment);
+
+
+    }
+    Q_INVOKABLE int inputProcess_addsegment()
+    {
+        segment inputSegment;
+        inputSegment.setName("");
+        inputSegment.setAddress(0);
+        inputSegment.setSize(0);
+        inputProcess.addSegment(inputSegment);
+        return inputProcess.size()-1;
+
 
     }
     Q_INVOKABLE void set_inputProcess_segment_Name(int i,QString Name)
@@ -264,6 +273,9 @@ public:
     Q_INVOKABLE bool addProcess()
     {
         bool x = add_process(inputProcess);
+
+        inputProcess.segments.clear();
+
         return x;
         emitQml();
 
@@ -284,7 +296,6 @@ public:
     Q_INVOKABLE void allocate_dummies()
     {
         sort(holes.begin(),holes.end(), sortByFirst);
-
         dummies.clear();
         int index = 0;
 
