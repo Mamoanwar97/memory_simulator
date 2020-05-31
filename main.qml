@@ -190,7 +190,7 @@ Window {
                     text: "Deallocate"
                     onClicked: {processtable.clear();
                         tabBar.removeItem(tabBar.currentIndex);
-                        MemoryBackend.removeProcess(tabBar.processID);
+                        MemoryBackend.deallocate_process(tabBar.processID);
                     }
                 }
                 Button {

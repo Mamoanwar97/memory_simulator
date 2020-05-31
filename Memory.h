@@ -217,20 +217,27 @@ private:
 
         return true;
     }
-    void deallocate_process(int id)
-    {
-        int size = processes[id].segments.size();
-        for(int i=0; i< size; i++)
-        {
-            delete_segment(id, i);
-        }
-    }
+
 
 public:
     memory() : QObject() { cout << "Mss" << endl; }
 
     process inputProcess;
     segment inputSegment;
+    Q_INVOKABLE void deallocate_process(int id)
+    {
+        int x= getID(id);
+        if(x!=-1)
+        {
+        int size = processes[x].segments.size();
+        for(int i=0; i< size; i++)
+        {
+            delete_segment(x, i);
+        }
+        processes.erase(processes.begin()+x);
+        emitQml();
+        }
+    }
     Q_INVOKABLE void set_inputProcess()
     {
 
