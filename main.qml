@@ -58,6 +58,17 @@ Window {
                     property int processID
                     id:tabBar
                     anchors.bottom:  mytable.top
+
+                    function clear()
+                    {
+                        for(var i =0 ; i < tabBar.count; i++)
+                        {
+                            var item = tabBar.itemAt(i);
+                            tabBar.removeItem(item);
+                        }
+                        console.log("TabBar Cleaaaaar");
+
+                    }
                 }
                 Component {
 
@@ -263,7 +274,7 @@ Window {
 
                         Button {
                             text: "Clear"
-                            onClicked: {memory.clear();processtable.clear();tabBar.clear();}
+                            onClicked: {memory.clear();MemoryBackend.clear();tabBar.clear();processtable.clear();}
                             Layout.row: 0
                             Layout.column: 0
                             Layout.rowSpan: 1
@@ -312,6 +323,9 @@ Window {
                                 myHole.hole_address = parseInt( holeAddress.text ) ;
                                 myHole.hole_size = parseInt( holeSize.text );
                                 MemoryBackend.add_hole(myHole)
+
+                                holeAddress.clear();
+                                holeSize.clear();
                             }
                         }
                         TextField {

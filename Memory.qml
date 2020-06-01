@@ -48,7 +48,7 @@ Rectangle {
         for (var i =0 ; i < processes.length; i ++)
         {
             var segments = processes[i].getSegments();
-            console.log(segments);
+            console.log("Draw: ",segments);
             for(var j =0 ; j < segments.length; j++) {
                 if(segments[j].seg_size != 0)
                     memory.addSegment(segments[j],processes[i].getID());
@@ -67,6 +67,6 @@ Rectangle {
             memory.segments[i].destroy();
         }
         memory.segments = []
-
+        console.log("Memory Clear");
     }
 }

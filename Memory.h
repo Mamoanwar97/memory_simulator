@@ -224,6 +224,14 @@ public:
 
     process inputProcess;
     segment inputSegment;
+
+    Q_INVOKABLE void clear()
+    {
+        this->processes.clear();
+        this->dummies.clear();
+        this->holes.clear();
+    }
+
     Q_INVOKABLE void deallocate_process(int id)
     {
         int x= getID(id);
