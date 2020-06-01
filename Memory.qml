@@ -20,7 +20,7 @@ Rectangle {
         var Segment    = newSegment.createObject(memory, {
                                      height : Qt.binding(function() { return segment.seg_size / memory.totalSize * memory.height}),
                                      y :  Qt.binding(function() { return segment.seg_address / memory.totalSize * memory.height}),
-                                     name: "P" + id.toString() +  " Size=" + segment.seg_size.toString()
+                                     name: "P" + id.toString() +" "+segment.name+  " Size=" + segment.seg_size.toString()
                                         });
         memory.segments.push(Segment);
     }

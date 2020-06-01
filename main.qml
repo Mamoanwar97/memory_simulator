@@ -35,24 +35,25 @@ Window {
                 Layout.column: 0
                 Layout.columnSpan: 1
                 Layout.rowSpan: 1
+                Layout.margins: 30
                 Layout.preferredWidth: mainGrid.width/2
                 Layout.preferredHeight:  mainGrid.height/2 - 150
 
                 TableViewColumn {
                     role: "Name"
                     title: "Segmant Name"
-                    width: 150
+                    width: 130
                 }
                 TableViewColumn {
                     role: "Address"
                     title: "Segmant Address"
-                    width: 150
+                    width: 140
                 }
 
                 TableViewColumn{
                     role: "Size"
                     title: "Segmant Limit"
-                    width: 150
+                    width: 130
                 }
                 TabBar {
                     property int processID
@@ -61,7 +62,7 @@ Window {
 
                     function clear()
                     {
-                        for(var i =0 ; i < tabBar.count; i++)
+                        for(var i =tabBar.count-1 ; i >=0; i--)
                         {
                             var item = tabBar.itemAt(i);
                             tabBar.removeItem(item);
@@ -102,6 +103,7 @@ Window {
             Component {
                 id: inputSegments
                 Row {
+
                     property int index
                     y:index*inputTable.height/5
                     id:row
@@ -111,8 +113,9 @@ Window {
                         height:inputTable.height/5
                         border.width: 2
                         border.color:"grey"
-                        TextInput{
+                        TextField{
                             anchors.fill:parent
+                            placeholderText: "Segment Name"
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             text: ""
@@ -125,8 +128,9 @@ Window {
                         height:inputTable.height/5
                         border.width: 2
                         border.color: "grey"
-                        TextInput{
+                        TextField{
                             anchors.fill:parent
+                            placeholderText: "Segment Size"
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             onTextChanged: MemoryBackend.set_inputProcess_segment_size(index,Number(text))
@@ -143,75 +147,80 @@ Window {
                 Layout.column: 0
                 Layout.columnSpan: 1
                 Layout.rowSpan: 1
+                Layout.margins: 30
                 Layout.preferredWidth: mainGrid.width/2
                 Layout.preferredHeight:  mainGrid.height/2 - 150
 
                 visible: false
 
             }
+            Rectangle
+            {
+                anchors.bottom:mainGrid.bottom
+                x:65
+                anchors.margins: 30
+                Row{
+                    Layout.row: 2
+                    Layout.column: 0
+                    Layout.columnSpan: 1
+                    Layout.rowSpan: 1
+                    Layout.preferredWidth: mainGrid.width/2
+                    Layout.preferredHeight:  40
 
-            Row{
-                Layout.row: 2
-                Layout.column: 0
-                Layout.columnSpan: 1
-                Layout.rowSpan: 1
-                Layout.preferredWidth: mainGrid.width/2
-                Layout.preferredHeight:  40
-
-                Button {
-                    id:verify
-                    text: "Allocate"
-                    onClicked: {
-                        mytable.visible=true;
-                        inputTable.visible=false;
-                        deallocate.visible=true;
-                        addsegment.visible=false;
-                        if( MemoryBackend.addProcess())
-                        {
-                            var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getinputProcessID())})
-                            tabBar.addItem(Button1);
-                        }
-                        else
-                        {
-                            console.log("Can not append process")
-                        }
-                        for(var i = inputTable.children.length; i > 0 ; i--) {
-                            inputTable.children[i-1].destroy();
+                    Button {
+                        id:verify
+                        text: "Allocate"
+                        onClicked: {
+                            mytable.visible=true;
+                            inputTable.visible=false;
+                            deallocate.visible=true;
+                            addsegment.visible=false;
+                            if( MemoryBackend.addProcess())
+                            {
+                                var Button1=tabButton.createObject(tabBar,{"text":"P"+(MemoryBackend.getinputProcessID())})
+                                tabBar.addItem(Button1);
+                            }
+                            else
+                            {
+                                console.log("Can not append process")
+                            }
+                            for(var i = inputTable.children.length; i > 0 ; i--) {
+                                inputTable.children[i-1].destroy();
+                            }
                         }
                     }
-                }
-                Button {
-                    id:addProcess
-                    text: "Add Process"
-                    onClicked: {
-                        //processtable.clear();
+                    Button {
+                        id:addProcess
+                        text: "Add Process"
+                        onClicked: {
+                            //processtable.clear();
 
-                        mytable.visible=false;
-                        deallocate.visible=false;
-                        addsegment.visible=true;
-                        inputTable.visible=true;
-                        MemoryBackend.set_inputProcess();
-                        var input=inputSegments.createObject(inputTable,{"index":0});
+                            mytable.visible=false;
+                            deallocate.visible=false;
+                            addsegment.visible=true;
+                            inputTable.visible=true;
+                            MemoryBackend.set_inputProcess();
+                            var input=inputSegments.createObject(inputTable,{"index":0});
 
+                        }
                     }
-                }
-                Button {
-                    id:deallocate
-                    visible: true
-                    text: "Deallocate"
-                    onClicked: {processtable.clear();
-                        tabBar.removeItem(tabBar.currentIndex);
-                        MemoryBackend.deallocate_process(tabBar.processID);
+                    Button {
+                        id:deallocate
+                        visible: true
+                        text: "Deallocate"
+                        onClicked: {processtable.clear();
+                            tabBar.removeItem(tabBar.currentIndex);
+                            MemoryBackend.deallocate_process(tabBar.processID);
+                        }
                     }
-                }
-                Button {
-                    id:addsegment
-                    visible:false
-                    text: "add segment"
-                    onClicked: { var input=inputSegments.createObject(inputTable,{"index":MemoryBackend.inputProcess_addsegment()});}
+                    Button {
+                        id:addsegment
+                        visible:false
+                        text: "add segment"
+                        onClicked: { var input=inputSegments.createObject(inputTable,{"index":MemoryBackend.inputProcess_addsegment()});}
+                    }
                 }
             }
-
             Column {
                 Layout.row: 0
                 Layout.column: 1
