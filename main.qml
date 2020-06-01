@@ -10,7 +10,7 @@ Window {
     height: 720
     minimumHeight: 720
     minimumWidth: 1280
-    title: qsTr("Hello World")
+    title: qsTr("Memory Simulator")
     id : windowRay2
     color: "#303841"
 
@@ -208,9 +208,12 @@ Window {
                         id:deallocate
                         visible: true
                         text: "Deallocate"
-                        onClicked: {processtable.clear();
+                        onClicked: {
+                            if(MemoryBackend.deallocate_process(tabBar.processID))
+                            {
+                            processtable.clear();
                             tabBar.removeItem(tabBar.currentIndex);
-                            MemoryBackend.deallocate_process(tabBar.processID);
+                            }
                         }
                     }
                     Button {

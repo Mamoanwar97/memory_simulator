@@ -7,6 +7,7 @@
 #include "hole.h"
 #include "sort.h"
 #include<QDebug>
+#include <QMessageBox>
 using namespace std;
 
 class segment
@@ -45,6 +46,15 @@ public:
     Q_INVOKABLE  int getSegmentSize(int i) {return  segments[i].getSize();}
     Q_INVOKABLE int getSegmentAddress(int i) {return segments[i].getAddress();}
     Q_INVOKABLE int size() {return segments.size();}
+    int getSize()
+    {
+        int size=0;
+        for (int i=0;i<segments.size();i++)
+        {
+            size+=segments[i].getSize();
+        }
+        return size;
+    }
 };
 Q_DECLARE_METATYPE(process);
 
@@ -54,6 +64,8 @@ class memory : public QObject
 {
     Q_OBJECT
 public:
+    QMessageBox errorMsg;
+
     Q_INVOKABLE vector<hole> holes;
     Q_INVOKABLE vector<process> processes;
     Q_INVOKABLE vector<segment> dummies;
@@ -212,6 +224,7 @@ private:
             {
                 delete_segment(id, j);
             }
+
             return false;
         }
 
@@ -232,7 +245,7 @@ public:
         this->holes.clear();
     }
 
-    Q_INVOKABLE void deallocate_process(int id)
+    Q_INVOKABLE bool deallocate_process(int id)
     {
         int x= getID(id);
         if(x!=-1)
@@ -244,6 +257,13 @@ public:
         }
         processes.erase(processes.begin()+x);
         emitQml();
+        return true;
+        }
+        else
+        {
+            errorMsg.setText("No process to deallocate");
+            errorMsg.show();
+            return false;
         }
     }
     Q_INVOKABLE void set_inputProcess()
@@ -368,10 +388,12 @@ public:
 
         processes.push_back(p);
         bool x = allocate_process(processes.size()-1);
-        if(!x)
+        if(!x || p.getSize()==0)
         {
             processes.pop_back();
             GlobalID--;
+            errorMsg.setText("Couldn't allocate process");
+            errorMsg.show();
             cout << "didn't allocate process" << endl;
             return false;
         }
@@ -454,8 +476,7 @@ public:
             combine_holes();
             emitQml();
         }
-
-    }
+        }
 };
 
 //int main()
